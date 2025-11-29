@@ -45,4 +45,13 @@
   return this.http.get(`${environment.API_BASE_URL}auth/check-email?email=${email}`);
 }
 
+
+getTaskStats(start: string, end: string) {
+  return this.http.get(`${environment.API_BASE_URL}analytics/stats?startDate=${start}&endDate=${end}`) 
+
+  }
+
+  getDashboardSummary() {
+  return this.http.get(`${environment.API_BASE_URL}analytics/dashboard`);
+}
   }

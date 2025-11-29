@@ -10,29 +10,37 @@ import { TaskService } from '../../../core/services/task.service';
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit{
-dashboardSummary = {
-  totalTasks: 0,
-  completed: 0,
-  toDo:0,
-  inProgress:0
+dashboardSummary: any = {
+  summary: {
+    totalTasks: 0,
+    completedTasks: 0,
+    todoTasks: 0,
+    inProgressTasks: 0,
+    overdueTasks: 0,
+    dueSoonTasks: 0,
+    completionRate: 0
+  },
+  // priorityBreakdown: {},
+  // statusBreakdown: {}
 };
+
 constructor(private taskService: TaskService) {}
 
 ngOnInit(): void {
-  this.taskService.getAllTasks().subscribe({
-    next: (response: any) => {
-      const tasks = response.data;
-      this.dashboardSummary = {
-        totalTasks: tasks.length,
-        toDo: tasks.filter((t:any) => t.status === 'todo').length,
-        inProgress: tasks.filter((t:any) => t.status === 'in-progress').length,
-        completed: tasks.filter((t:any)=> t.status === 'completed').length,
-      };
-    },
-    error: (err) => console.error(err)
-  });
+  this.getDashboard();
 }
-
+/**
+ * Gets dashboard
+ */
+getDashboard(){
+  this.taskService.getDashboardSummary().subscribe({
+    next:(response:any)=>{
+      this.dashboardSummary = response.data;
+    },error:(error:any)=>{
+      console.log('eror',error)
+    }
+  })
+}
 
 
 }

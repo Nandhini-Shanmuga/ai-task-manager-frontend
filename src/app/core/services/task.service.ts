@@ -14,9 +14,12 @@ export class TaskService {
  /**
   * Gets all tasks
   */
-getAllTasks(): Observable<any> {
-  return this.http.get(`${environment.API_BASE_URL}tasks`);
+getAllTasks(page?:number,limit?:number): Observable<any> {
+  const parms=!page && !limit ? '' :`?page=${page || ''}&limit=${limit || ''}`
+
+  return this.http.get(`${environment.API_BASE_URL}tasks${parms}`);
 }
+
 /**
  * Creates task
  * @param params 
@@ -43,5 +46,11 @@ createTask(params: any): Observable<any> {
   getAIInsights(id: string): Observable<any> {
     return this.http.get(`${environment.API_BASE_URL}tasks/${id}/ai-insights`);
   }
-
+/**
+ * Gets dashboard summary
+ * @returns  
+ */
+getDashboardSummary() {
+  return this.http.get(`${environment.API_BASE_URL}analytics/dashboard`);
+}
 }
