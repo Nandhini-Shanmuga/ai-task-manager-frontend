@@ -1,0 +1,137 @@
+
+<div class="p-5 !pb-20 lg:!pb-48 md:!pb-32 md:ml-64 ml-16 mt-20 pt-[24px]">
+  <div>
+    <app-breacrumb [items]="breadcrumbs()" />
+  </div>
+    <div class="border rounded-lg  mt-4">
+      <section class="">
+        <div class="mx-auto">
+          <section class="view">
+            <div class="bg-white rounded-lg shadow-md  overflow-hidden relative">
+              <div
+                class="flex flex-col bg-gray-50 border-b justify-between p-4 rounded-t-lg md:flex-row md:space-x-4 md:space-y-0 space-y-3">
+                <div class="flex flex-1 space-x-3">
+                  <h5 class="text-lg  font-semibold lg:text-2xl sm:text-xl">
+                   {{ taskId() ? 'Update Task' : 'Create Task' }} 
+                  </h5>
+                </div>
+              </div>
+              <div class="mb-0 overflow-x-auto">
+                <section class="bg-white ">
+                  <div class="p-6 md:p-8">
+                    <form [formGroup]="createTaskForm" class="md:space-y-6 space-y-4">
+                      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                       <!--Title-->
+                        <div>
+                          <label class="text-gray-700 text-sm block font-semibold mb-2 sm:text-base"
+                            for="name">Title <span class="text-red-600" *ngIf="!taskId()">*</span></label>
+                          <input type="text" id="name" formControlName="title" placeholder="Enter title name" [readonly]="taskId() || isLoading()" class="text-sm  md:text-base w-full mb-0.5 px-4 py-3 border border-gray-300 rounded-lg shadow-sm transition duration-200" (keydown)="preventMultipleSpaces($event)"
+                            autocomplete="off" (keypress)="preventSpecialCharacters($event)"/>
+                          @if (createTaskForm.get('title')?.touched && createTaskForm.get('title')?.hasError('required')) {
+                            <div class="text-red-600 text-xs absolute mt-1">
+                            Title is required.
+                            </div>
+                          }
+                          @if(createTaskForm.get('title')?.touched && createTaskForm.get('title')?.hasError('length')) {
+                            <div class="text-red-600 text-xs absolute">Title name must be at least 3 characters.
+                          </div> 
+                          }
+                          @if (createTaskForm.get('title')?.touched && createTaskForm.get('title')?.hasError('collectionNameExists') &&!taskId()) {
+                            <div class="text-red-600 text-xs absolute mt-1">Title name is already exists.</div>
+                          }
+                        </div>
+                        <!--Description-->
+                         <div>
+                          <label class="text-gray-700 text-sm block font-semibold mb-2 sm:text-base"
+                            for="name">Description<span class="text-red-600" *ngIf="!taskId()">*</span></label>
+                            <textarea id="message" rows="4"  formControlName="description" [readonly]="taskId()  || isLoading()"  placeholder="Enter description" class="border border-gray-300 rounded-lg shadow-sm text-sm w-full duration-200 mb-0.5 md:text-base px-4 py-3 transition"></textarea>
+                            @if (createTaskForm.get('description')?.touched && createTaskForm.get('description')?.hasError('required')) {
+                            <div class="text-red-600 text-xs absolute">
+                              Description is required.
+                            </div>
+                            }
+                        </div>
+                        
+                    <!--Priority-->
+                        <div>
+                          <label class="text-gray-700 text-sm block font-semibold mb-2 sm:text-base"
+                            for="priority">Priority <span class="text-red-600" *ngIf="!taskId()">*</span></label>
+
+                            <select formControlName="priority"
+                            class="custom-select-scroll text-sm md:text-base w-full mb-0.5 px-4 py-3 border border-gray-300 rounded-lg shadow-sm transition duration-200">
+
+                                <option value="" disabled selected hidden>Select a priority</option>
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                                </select>
+
+                          @if (createTaskForm.get('priority')?.touched && createTaskForm.get('priority')?.hasError('required')) {
+                          <div class="text-red-600 text-xs absolute">
+                            Priority is required.
+                          </div>
+                          }
+                        </div>
+                        <!--Due date-->
+                          <div>
+                          <label class="text-gray-700 text-sm block font-semibold mb-2 sm:text-base"
+                            for="due-date">Due Date<span class="text-red-600">*</span></label>
+                               <input type="date" formControlName="dueDate" [min]="minDate" class="text-sm  md:text-base w-full mb-0.5 px-4 py-3 border border-gray-300 rounded-lg shadow-sm transition duration-200"/>                    
+                            @if (createTaskForm.get('dueDate')?.touched && createTaskForm.get('dueDate')?.hasError('required')) {
+                            <div class="text-red-600 text-xs absolute">
+                              Due date  is required.
+                            </div>
+                            }
+                        </div>
+                        <!--Status-->
+                       <div>
+                        <label class="text-gray-700 text-sm block font-semibold mb-2 sm:text-base"
+                            for="status">Status <span class="text-red-600" *ngIf="!taskId()">*</span></label>
+
+                         <select formControlName="status" class="text-sm md:text-base w-full mb-0.5 px-4 py-3 border border-gray-300 rounded-lg shadow-sm transition duration-200">
+                            <option value="" disabled selected hidden>Select a status</option>
+                             <option value="todo">Todo</option>
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                        </select>
+
+                        @if (createTaskForm.get('status')?.touched && createTaskForm.get('status')?.hasError('required')) {
+                            <div class="text-red-600 text-xs absolute">
+                            Status is required.
+                            </div>
+                        }
+                        </div>
+
+                       
+                      </div>  
+              <button type="submit" class="button flex items-center mt-4"
+            [disabled]="!createTaskForm.valid || isLoading() || (taskId() ? !isModified : false)"
+          [ngClass]="{
+            'opacity-50 cursor-not-allowed': !createTaskForm.valid || isLoading() || (taskId() ? !isModified : false),
+            'opacity-100 cursor-pointer hover:bg-bgGray-100': createTaskForm.valid && !isLoading() && (taskId() ? isModified : true)
+          }" (click)="taskId() ? updateTask() : createTask()">
+  <ng-container *ngIf="isLoading(); else defaultText">
+    <svg aria-hidden="true" role="status" class="h-4 w-4 text-gray-200 animate-spin inline mr-2" viewBox="0 0 100 101" fill="none">
+      <!-- spinner paths -->
+    </svg>
+    <span>{{ taskId() ? 'Updating...' : 'Creating...' }}</span>
+  </ng-container>
+
+  <ng-template #defaultText>
+    <span>{{ taskId() ? 'Update Task' : 'Create Task' }}</span>
+  </ng-template>
+</button>
+
+
+
+
+                    </form>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </div>

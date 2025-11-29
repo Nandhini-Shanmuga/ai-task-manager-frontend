@@ -1,0 +1,20 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.button {
+    color: white;
+    background-color: #db9536;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 0.875rem; /* text-sm */
+    padding: 0.625rem 1.25rem; /* px-5 py-2.5 */
+    border-radius: 0.5rem; /* rounded-lg */
+    text-align: center;
+    margin-right: 0.5rem; /* me-2 */
+    margin-bottom: 0.5rem; /* mb-2 */
+    transition: background-color 0.3s, transform 0.2s;
+    cursor: pointer;
+  }

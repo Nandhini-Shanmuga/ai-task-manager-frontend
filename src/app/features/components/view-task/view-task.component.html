@@ -1,0 +1,71 @@
+<div class="p-4 md:p-5 mt-20 ml-[60px] md:ml-64 !pb-20 md:!pb-32 lg:!pb-48">
+
+  <!-- Breadcrumbs -->
+ <div class="flex">
+        <app-breacrumb [items]="breadcrumbs()"></app-breacrumb>
+     
+  
+    </div>
+
+  <!-- Task Card -->
+  <div class="max-w-3xl mx-auto bg-white shadow rounded-lg p-6">
+    <h2 class="text-xl font-bold text-gray-900 mb-6">View Task Details</h2>
+
+    <!-- Task Info -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="font-semibold text-gray-700">Title:</div>
+      <div class="text-gray-900 break-words">{{ task()?.title }}</div>
+
+      <div class="font-semibold text-gray-700">Description:</div>
+      <div class="text-gray-900 break-words">{{ task()?.description }}</div>
+
+      <div class="font-semibold text-gray-700">Priority:</div>
+      <div class="text-gray-900">{{ task()?.priority }}</div>
+
+      <div class="font-semibold text-gray-700">Status:</div>
+      <div [ngClass]="{
+            'text-green-600': task()?.status?.toLowerCase() === 'completed',
+            'text-yellow-600': task()?.status?.toLowerCase() === 'in-progress',
+            'text-red-600': task()?.status?.toLowerCase() === 'pending'
+          }">
+        {{ task()?.status }}
+      </div>
+
+      <div class="font-semibold text-gray-700">Due Date:</div>
+      <div class="text-gray-900">{{ task()?.dueDate | date:'mediumDate' }}</div>
+    </div>
+
+    <!-- AI Insights -->
+    <div *ngIf="task()?.aiInsights" class="mt-6">
+      <h3 class="text-xl font-semibold mb-4">AI Insights</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="font-semibold text-gray-700">Suggested Priority:</div>
+        <div class="text-gray-900 break-words">{{ task()?.aiInsights?.suggestedPriority }}</div>
+
+        <div class="font-semibold text-gray-700">Reasoning:</div>
+        <div class="text-gray-900 break-words">{{ task()?.aiInsights?.reasoning }}</div>
+
+        <div class="font-semibold text-gray-700">Estimated Effort:</div>
+        <div class="text-gray-900 break-words">{{ task()?.aiInsights?.estimatedEffort }}</div>
+
+        <div class="font-semibold text-gray-700">Recommendations:</div>
+        <div class="text-gray-900">
+          <ul class="list-disc ml-5">
+            <li *ngFor="let rec of task()?.aiInsights?.recommendations">{{ rec }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading shimmer -->
+    <ng-container *ngIf="isLoading()">
+      <div class="space-y-4 mt-4">
+        <div class="h-4 w-full bg-gray-200 animate-pulse rounded"></div>
+        <div class="h-4 w-full bg-gray-200 animate-pulse rounded"></div>
+        <div class="h-4 w-full bg-gray-200 animate-pulse rounded"></div>
+        <div class="h-4 w-full bg-gray-200 animate-pulse rounded"></div>
+      </div>
+    </ng-container>
+
+  </div>
+</div>
