@@ -1,4 +1,4 @@
-AI Task Manager – Frontend
+## Task Management System –Frontend
 
 This is the frontend application for AI Task Manager, built using Angular 18.
 It provides task creation, dashboard analytics, AI task insights, and user authentication.
