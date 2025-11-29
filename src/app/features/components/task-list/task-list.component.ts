@@ -14,11 +14,12 @@ import { TaskHelper } from './helper/task.helper';
 import { ToastrService } from 'ngx-toastr';
 import { DeletePopUpComponent } from '../../../shared/components/delete-pop-up/delete-pop-up.component';
 import { FilterComponent } from '../../../shared/components/filter/filter.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [CommonModule,BreacrumbComponent,FormsModule,ReactiveFormsModule,TaskManagerTableComponent,DeletePopUpComponent,FilterComponent],
+  imports: [CommonModule,BreacrumbComponent,FormsModule,ReactiveFormsModule,TaskManagerTableComponent,DeletePopUpComponent,FilterComponent,PaginationComponent],
   providers: [DatePipe],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.css',
@@ -42,6 +43,15 @@ export class TaskListComponent implements OnInit {
   currentFilters: any = {};  
   isFilterOpen = false;
   searchData: any[] = [];
+  protected limit: number = 10;
+  protected totalItems: number = 0;
+  protected totalPages: number = 0;
+  protected pageNumbers: number = 0;
+  protected startingIndex: number = 0;
+  protected apiUrl: string = "task";
+  protected currentPage = 1;
+  protected previous: boolean = false;
+  protected next: boolean = false;
   constructor(){}
   ngOnInit(){
     this.getAllTask();
@@ -59,13 +69,16 @@ this.router.navigate(['task/create'])
  * Gets all task
  */
 getAllTask(){
-  this.taskService.getAllTasks().subscribe({
+  this.taskService.getAllTasks(this.currentPage,this.limit).subscribe({
     next:(response:any)=>{
-      console.log('response in get all task',response)
-      this.taskData = this.taskHelper.listTask(response.data, 1);
-      console.log('Formatted tasks:', this.taskData);
+    this.taskData = response.data.docs;
+    this.startingIndex = response.data.pagingCounter;   
+    this.taskData = this.taskHelper.listTask(this.taskData,this.startingIndex);
+    this.next = response.data.hasNextPage;
+    this.totalPages = response.data.totalPages;
+    this.totalItems = response.data.totalDocs;
       // Initialize filteredTasks to show all tasks initially
-      this.filteredTasks = [...this.taskData];
+    this.filteredTasks = [...this.taskData];
    
     },
     error:(err:any)=>{
@@ -173,6 +186,28 @@ searchTasks() {
     task.priority.toLowerCase().includes(term)
   );
 }
+/**
+ * Lists task item component
+ * @param list 
+ */
+public list(list: any) {
+  this.taskData = list;
+  this.taskData = this.taskHelper.listTask(this.taskData, this.startingIndex);
+}
 
+/**
+ * Sets starting index
+ * @param index 
+ */
+setStartingIndex(index: any) {
+  this.startingIndex = index;  
+}
+/**
+ * Determines whether page change on
+ * @param page 
+ */
+public onPageChange(page: any) {
+  this.currentPage = page;
+}
 
 }

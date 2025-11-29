@@ -62,7 +62,8 @@
               <div class="mx-4 overflow-x-auto pb-4">
                 <app-task-manager-table [tableHeader]="tableHeader" [tableData]="filteredTasks" (edit)="editTask($event)" (delete)="openDeleteModal($event)" (view)="viewTask($event)"></app-task-manager-table>
             </div> 
-            <!-- @if(ownerData && ownerData?.length > 0) {
+            @if(taskData && totalItems > 0) {
+
               <div class="px-4 mb-4">
                 <app-pagination
                 [firstIndex]="startingIndex" (advertisingList)="list($event)" [apiUrl]="apiUrl" [currentPage]="currentPage"
@@ -71,7 +72,7 @@
                 </app-pagination>
               </div>
              
-            }  -->
+            } 
             </div>
           </section>
         </div>

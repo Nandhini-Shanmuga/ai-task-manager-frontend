@@ -34,7 +34,6 @@ export class TaskHelper {
    * @returns Array of formatted Task objects
    */
  public listTask(tasksData: any, startingIndex: number) {
-    console.log('taskdat',tasksData)
   return tasksData.map((task: any, index: number) => ({
     no: startingIndex + index,
     id: task._id,
