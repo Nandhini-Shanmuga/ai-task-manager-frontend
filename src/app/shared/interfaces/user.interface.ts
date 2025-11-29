@@ -1,0 +1,8 @@
+/*
+User interface response
+*/
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}

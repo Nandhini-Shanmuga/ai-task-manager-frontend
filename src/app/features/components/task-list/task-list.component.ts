@@ -1,0 +1,178 @@
+import { CommonModule, DatePipe } from '@angular/common';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal } from '@angular/core';
+import { BreacrumbComponent } from '../../../shared/components/breacrumb/breacrumb.component';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
+import { BreadcrumbItem } from '../../../shared/interfaces/breadcrumb.interface';
+import { generateTaskBreadcrumbs } from '../../../shared/helper/breadcrumb.helper';
+import { Router } from '@angular/router';
+import { TaskService } from '../../../core/services/task.service';
+import { ICreateTaskTableHeader } from './interface/task.interface';
+import { createTaskTableHeader } from './store/task.item';
+import { TaskManagerTableComponent } from '../../../shared/components/task-manager-table/task-manager-table.component';
+import { TaskHelper } from './helper/task.helper';
+import { ToastrService } from 'ngx-toastr';
+import { DeletePopUpComponent } from '../../../shared/components/delete-pop-up/delete-pop-up.component';
+import { FilterComponent } from '../../../shared/components/filter/filter.component';
+
+@Component({
+  selector: 'app-task-list',
+  standalone: true,
+  imports: [CommonModule,BreacrumbComponent,FormsModule,ReactiveFormsModule,TaskManagerTableComponent,DeletePopUpComponent,FilterComponent],
+  providers: [DatePipe],
+  templateUrl: './task-list.component.html',
+  styleUrl: './task-list.component.css',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+})
+export class TaskListComponent implements OnInit {
+  search = new FormControl('');
+  currentSearchTerm: string = '';
+  tableHeader: ICreateTaskTableHeader[] = createTaskTableHeader;
+  isDeleteLoading=signal(false)
+  currentTaskId: string | null = null;
+  currentTaskTitle: string | null = null;
+  isDeleteModalVisible = false;
+  protected router = inject(Router)
+  protected breadcrumbs = computed<BreadcrumbItem[]>(() => generateTaskBreadcrumbs('', false));
+  private taskService = inject(TaskService);
+  private taskHelper=inject(TaskHelper);
+  private toastr = inject(ToastrService);
+  taskData: any[] = [];     
+  filteredTasks: any[] = [];  // Displayed filter tasks
+  currentFilters: any = {};  
+  isFilterOpen = false;
+  searchData: any[] = [];
+  constructor(){}
+  ngOnInit(){
+    this.getAllTask();
+    this.search.valueChanges
+    .pipe(debounceTime(300), distinctUntilChanged())
+    .subscribe(() => this.searchTasks());
+  }
+  /**
+ * Navigates to create task page
+ */
+onCreateTask(){
+this.router.navigate(['task/create'])
+}
+/**
+ * Gets all task
+ */
+getAllTask(){
+  this.taskService.getAllTasks().subscribe({
+    next:(response:any)=>{
+      console.log('response in get all task',response)
+      this.taskData = this.taskHelper.listTask(response.data, 1);
+      console.log('Formatted tasks:', this.taskData);
+      // Initialize filteredTasks to show all tasks initially
+      this.filteredTasks = [...this.taskData];
+   
+    },
+    error:(err:any)=>{
+      console.log('error in get all task',err)
+    }
+  })
+}
+/**
+ * Edits task
+ * @param event 
+ */
+editTask(event:any){
+  console.log("edit task",event)
+    this.router.navigate([`/task/edit/${event.id}`]);
+  }
+ 
+  /**
+   * Views task
+   * @param event 
+   */
+  viewTask(event: any) {
+  console.log('view event', event);
+  this.router.navigate(['task/view', event.id]);
+}
+ /**
+ * Opens delete modal
+ * @param event 
+ */
+openDeleteModal(event: { id: string; title: string }) {
+  console.log('event',event)
+    this.currentTaskId = event.id;
+    this.currentTaskTitle = event.title;
+    this.isDeleteModalVisible = true;
+  }
+
+/**
+ * Closes delete modal
+ */
+closeDeleteModal() {
+  this.isDeleteModalVisible = false;
+  this.currentTaskTitle = null;
+}
+
+/**
+ * Handles delete
+ */
+handleDelete() {
+  if (!this.currentTaskId) return; 
+
+  this.deleteTask(this.currentTaskId); 
+  this.closeDeleteModal();
+}
+
+  /**
+   * Deletes owner
+   * @param id 
+   */
+  deleteTask(id:string){
+    this.isDeleteLoading.set(true);
+    this.taskService.deleteTask(id).subscribe({
+      next:(response:any)=>{
+        this.isDeleteLoading.set(false);
+        this.toastr.success(response.message);
+        this.getAllTask();
+      },error:(error:any)=>{
+        console.error(error);
+        this.isDeleteLoading.set(false);
+
+      }
+    })
+  }
+
+
+ /**
+  * Filters tasks
+  * @returns  
+  */
+
+onFilter(filters: any) {
+  this.isFilterOpen = false;
+  this.filteredTasks = this.taskData.filter(task => {
+    const statusMatch = filters.status ? task.status === filters.status : true;
+    const priorityMatch = filters.priority ? task.priority === filters.priority : true;
+
+    return statusMatch && priorityMatch;
+  });
+}
+
+
+
+/**
+ * Searchs tasks
+ * @returns  
+ */
+searchTasks() {
+  const term = this.search.value?.trim().toLowerCase() || '';
+  if (!term) {
+    this.filteredTasks = [...this.taskData];
+    return;
+  }
+
+  this.filteredTasks = this.taskData.filter(task =>
+    task.title.toLowerCase().includes(term) ||
+    task.status.toLowerCase().includes(term) ||
+    task.priority.toLowerCase().includes(term)
+  );
+}
+
+
+}
