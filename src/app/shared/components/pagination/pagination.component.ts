@@ -22,8 +22,8 @@ export class PaginationComponent {
   @Input() apiUrl: string = '';
   @Input() firstIndex: number = 0;
   @Input() search: string = '';
-
-
+ @Input() filters: any = {}; 
+ @Input() searchTerm: string = '';
   constructor(private taskService: TaskService) { }
   
 
@@ -31,57 +31,50 @@ export class PaginationComponent {
    * Gets pagination list
    * @returns  
    */
-  public getPaginationList() {
-    let apiCall$: any;
-    switch (this.apiUrl) {
-      case 'task':
-        apiCall$ = this.taskService.getAllTasks(this.currentPage,this.limit);
-        break;
-   
-      default:
-        console.error('Invalid API type');
-        return;
-    }
-
-    apiCall$.subscribe({
-      next: (res: any) => {
-           
-     if (this.apiUrl === 'single-nft') {
-        // Handle single NFTs response
-        const singleNfts = res?.data?.singleNfts;
-        if (singleNfts) {
-          this.totalItems = singleNfts.total;
-          this.totalPages = Math.ceil(singleNfts.total / singleNfts.limit);
-          this.totalDocs = singleNfts.total;
-          this.firstIndex = (singleNfts.page - 1) * singleNfts.limit + 1;          
-          this.startingIndex.emit(this.firstIndex);
-          this.advertisingList.emit(singleNfts.results);
-        }
-      } else if (this.apiUrl === 'bulk-nft') {
-        // Handle bulk NFTs response
-        const bulkNfts = res?.data?.bulkNfts;
-        if (bulkNfts) {
-          this.totalItems = bulkNfts.total;
-          this.totalPages = Math.ceil(bulkNfts.total / bulkNfts.limit);
-          this.totalDocs = bulkNfts.total;
-          this.firstIndex = (bulkNfts.page - 1) * bulkNfts.limit + 1;
-          this.startingIndex.emit(this.firstIndex);
-          this.advertisingList.emit(bulkNfts.results);
-        }
-      } else {
-        this.totalItems = res.data.totalDocs;
-        this.totalPages = res.data.totalPages;
-        this.totalDocs = res.data.totalDocs;
-        this.firstIndex = res.data.pagingCounter;
-        this.startingIndex.emit(this.firstIndex);
-        this.advertisingList.emit(res.data.docs);
+    public getPaginationList() {
+      let apiCall$: any;
+      switch (this.apiUrl) {
+        case 'task':
+          const params = {
+          page: this.currentPage,
+          limit: this.limit,
+          ...this.filters 
+        };
+        // Add search if exists
+       if (this.searchTerm && this.searchTerm.trim()) {
+        params.search = this.searchTerm.trim();
       }
-    },
-      error: (err: any) => {
-        console.log(err);
+        // Add filters if exist
+        if (this.filters && Object.keys(this.filters).length > 0) {
+          Object.keys(this.filters).forEach(key => {
+            if (this.filters[key]) {
+              params[key] = this.filters[key];
+            }
+          });
+        }
+        console.log('params',params)
+          apiCall$ = this.taskService.getAllTasks(params);
+          break;
+    
+        default:
+          console.error('Invalid API type');
+          return;
+      }
+
+      apiCall$.subscribe({
+        next: (res: any) => {
+        this.totalItems = res.data.totalDocs;
+          this.totalPages = res.data.totalPages;
+          this.totalDocs = res.data.totalDocs;
+          this.firstIndex = res.data.pagingCounter;
+          this.startingIndex.emit(this.firstIndex);
+          this.advertisingList.emit(res.data.docs);
       },
-    });
-  }
+        error: (err: any) => {
+          console.log(err);
+        },
+      });
+    }
 
   /**
     * Changes page

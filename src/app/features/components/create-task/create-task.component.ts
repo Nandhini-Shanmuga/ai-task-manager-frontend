@@ -76,7 +76,6 @@ createTask(){
 
     this.taskService.createTask(this.createTaskForm.value).subscribe({
       next:(response:any)=>{
-        console.log('task res',response);
         this.createTaskForm.reset();
         this.toastr.success(response.message);
         this.router.navigate(['task']);

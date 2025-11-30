@@ -17,7 +17,7 @@ toastr = inject(ToastrService)
 logOut(){
   this.authService.logoutUser().subscribe({
     next:(response:any)=>{
-      console.log("logout res",response);
+      
       this.toastr.success(response.message);
 
       // Remove session token

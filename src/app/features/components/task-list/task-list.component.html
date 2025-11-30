@@ -60,14 +60,14 @@
                  </div>
               </div>
               <div class="mx-4 overflow-x-auto pb-4">
-                <app-task-manager-table [tableHeader]="tableHeader" [tableData]="filteredTasks" (edit)="editTask($event)" (delete)="openDeleteModal($event)" (view)="viewTask($event)"></app-task-manager-table>
+                <app-task-manager-table [tableHeader]="tableHeader" [tableData]="taskData" (edit)="editTask($event)" (delete)="openDeleteModal($event)" (view)="viewTask($event)"></app-task-manager-table>
             </div> 
             @if(taskData && totalItems > 0) {
 
               <div class="px-4 mb-4">
                 <app-pagination
                 [firstIndex]="startingIndex" (advertisingList)="list($event)" [apiUrl]="apiUrl" [currentPage]="currentPage"
-                [limit]="limit" [totalItems]="totalItems" [totalPages]="totalPages" 
+                [limit]="limit" [totalItems]="totalItems" [totalPages]="totalPages" [searchTerm]="currentSearchTerm"
                 (pageChanged)="onPageChange($event)" (startingIndex)="setStartingIndex($event)">
                 </app-pagination>
               </div>

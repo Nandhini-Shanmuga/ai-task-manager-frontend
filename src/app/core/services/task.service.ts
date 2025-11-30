@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -14,10 +14,17 @@ export class TaskService {
  /**
   * Gets all tasks
   */
-getAllTasks(page?:number,limit?:number): Observable<any> {
-  const parms=!page && !limit ? '' :`?page=${page || ''}&limit=${limit || ''}`
-
-  return this.http.get(`${environment.API_BASE_URL}tasks${parms}`);
+getAllTasks(params:any): Observable<any> {
+   // HttpParams automatically ignores null/undefined values
+  let httpParams = new HttpParams();
+  
+  Object.keys(params).forEach(key => {
+    if (params[key] !== null && params[key] !== undefined && params[key] !== '') {
+      httpParams = httpParams.set(key, params[key].toString());
+    }
+  });
+ console.log('HTTP Params:', httpParams.toString())
+  return this.http.get(`${environment.API_BASE_URL}tasks`, { params: httpParams });;
 }
 
 /**
