@@ -81,9 +81,7 @@ getAllTask(){
     this.taskData = this.taskHelper.listTask(this.taskData,this.startingIndex);
     this.next = response.data.hasNextPage;
     this.totalPages = response.data.totalPages;
-    this.totalItems = response.data.totalDocs;
-   console.log('Filtered tasks loaded:', this.taskData);  
-   
+    this.totalItems = response.data.totalDocs;   
     },
     error:(err:any)=>{
       console.log('error in get all task',err)
@@ -95,7 +93,6 @@ getAllTask(){
  * @param event 
  */
 editTask(event:any){
-  console.log("edit task",event)
     this.router.navigate([`/task/edit/${event.id}`]);
   }
  
@@ -172,6 +169,7 @@ onFilter(filters: any) {
       this.paginationComponent.filters = this.currentFilters;
       this.paginationComponent.getPaginationList();
     }
+    
 }
 
 

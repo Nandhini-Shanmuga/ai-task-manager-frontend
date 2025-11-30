@@ -8,9 +8,7 @@ export const routes: Routes = [
   {
     path:'sign-up',loadComponent: () =>import('./auth/components/signup/signup.component').then(m=>m.SignupComponent)
   },
-  {
-    path:'table',loadComponent: () =>import('../app/shared/components/task-manager-table/task-manager-table.component').then(m=>m.TaskManagerTableComponent),
-  },
+
   {path:'dashboard',canActivate:[authGuard],
     loadComponent:()=>import('../app/features/components/dashboard/dashboard.component').then(m=>m.DashboardComponent)},
     {path:'task',

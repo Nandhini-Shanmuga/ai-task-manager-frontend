@@ -23,7 +23,6 @@ getAllTasks(params:any): Observable<any> {
       httpParams = httpParams.set(key, params[key].toString());
     }
   });
- console.log('HTTP Params:', httpParams.toString())
   return this.http.get(`${environment.API_BASE_URL}tasks`, { params: httpParams });;
 }
 
@@ -49,10 +48,7 @@ createTask(params: any): Observable<any> {
     return this.http.delete(`${environment.API_BASE_URL}tasks/delete/${id}`);
   }
 
-  /** Get AI insights for a task */
-  getAIInsights(id: string): Observable<any> {
-    return this.http.get(`${environment.API_BASE_URL}tasks/${id}/ai-insights`);
-  }
+
 /**
  * Gets dashboard summary
  * @returns  
