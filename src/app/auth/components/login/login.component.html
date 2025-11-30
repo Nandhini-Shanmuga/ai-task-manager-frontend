@@ -53,7 +53,7 @@
           </div>
                  
          <button type="submit"  [disabled]="loginForm.invalid || apiLoader()"
-        [ngClass]="{'opacity-50 cursor-not-allowed': loginForm.invalid || apiLoader(),'opacity-100 cursor-pointer': !(loginForm.invalid || apiLoader())}"      class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+        [ngClass]="{'opacity-50 cursor-not-allowed': loginForm.invalid || apiLoader(),'opacity-100 cursor-pointer': !(loginForm.invalid || apiLoader())}"      class="w-full text-white bg-primary-600  focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600  dark:focus:ring-primary-800">
         <ng-container *ngIf="apiLoader(); else loginText">
             <svg aria-hidden="true" role="status" class="inline w-4 h-4 me-3 text-white animate-spin"
             viewBox="0 0 100 101"  fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -67,7 +67,7 @@
         </ng-template>  
 </button>
                   <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                      Don’t have an account yet? <a [routerLink]="['/sign-up']" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
+                      Don’t have an account yet? <a [routerLink]="['/sign-up']" class="font-medium text-primary-600  dark:text-primary-500">Sign up</a>
                   </p>
               </form>
           </div>

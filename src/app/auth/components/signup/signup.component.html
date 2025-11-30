@@ -102,14 +102,15 @@
                     <circle *ngIf="isConfirmPasswordVisible()" cx="12" cy="12" r="3"></circle> 
                 </svg>
                 </button>
-      
+                <div class="mt-1 text-xs text-red-600 min-h-[1.25rem]">
             @if (signupForm.get('confirmPassword')?.touched && signupForm.get('confirmPassword')?.hasError('required')) {
-              <div class="text-red-600 text-xs absolute mt-1">Confirm password is required.</div>
+              <div>Confirm password is required.</div>
             }
 
-            @if (signupForm.hasError('passwordMismatch') && signupForm.get('confirmPassword')?.touched) {
-              <div class="text-red-600 text-xs absolute mt-1">Passwords do not match.</div>
+            @else if (signupForm.hasError('passwordMismatch') && signupForm.get('confirmPassword')?.touched && signupForm.get('confirmPassword')?.value) {
+              <div>Passwords do not match.</div>
             }
+            </div>
           </div>
 
 
@@ -117,7 +118,7 @@
         <button type="submit" [disabled]="signupForm.invalid || apiLoader() || emailMessage()"
         [ngClass]="{'opacity-50 cursor-not-allowed': signupForm.invalid || apiLoader() || emailMessage(),
               'opacity-100 cursor-pointer': !(signupForm.invalid || apiLoader() || !emailMessage())}"
-        class="w-full text-white bg-primary-600 hover:bg-primary-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center flex items-center justify-center">
+        class="w-full text-white bg-primary-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center flex items-center justify-center">
         <ng-container *ngIf="apiLoader(); else signupText">
             <svg aria-hidden="true" role="status" class="inline w-4 h-4 me-3 text-white animate-spin"
             viewBox="0 0 100 101"  fill="none" xmlns="http://www.w3.org/2000/svg">

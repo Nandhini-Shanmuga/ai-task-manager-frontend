@@ -21,8 +21,7 @@ export class FilterComponent {
     this.filterForm = this.fb.group({
       status: [''],      // todo, completed
       priority: [''],    // low, medium, high
-      from_date: [''],   // start date
-      to_date: [''],     // end date
+      
     });
   }
 

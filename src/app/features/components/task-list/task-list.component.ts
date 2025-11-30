@@ -1,5 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { BreacrumbComponent } from '../../../shared/components/breacrumb/breacrumb.component';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
@@ -52,12 +52,12 @@ export class TaskListComponent implements OnInit {
   protected currentPage = 1;
   protected previous: boolean = false;
   protected next: boolean = false;
+  @ViewChild(PaginationComponent) paginationComponent!: PaginationComponent;
+  
   constructor(){}
   ngOnInit(){
     this.getAllTask();
-    this.search.valueChanges
-    .pipe(debounceTime(300), distinctUntilChanged())
-    .subscribe(() => this.searchTasks());
+   this.setupSearchListener();
   }
   /**
  * Navigates to create task page
@@ -69,7 +69,12 @@ this.router.navigate(['task/create'])
  * Gets all task
  */
 getAllTask(){
-  this.taskService.getAllTasks(this.currentPage,this.limit).subscribe({
+    const params = {
+    page: this.currentPage,
+    limit: this.limit,
+    ...this.currentFilters 
+  };
+  this.taskService.getAllTasks(params).subscribe({
     next:(response:any)=>{
     this.taskData = response.data.docs;
     this.startingIndex = response.data.pagingCounter;   
@@ -77,8 +82,7 @@ getAllTask(){
     this.next = response.data.hasNextPage;
     this.totalPages = response.data.totalPages;
     this.totalItems = response.data.totalDocs;
-      // Initialize filteredTasks to show all tasks initially
-    this.filteredTasks = [...this.taskData];
+   console.log('Filtered tasks loaded:', this.taskData);  
    
     },
     error:(err:any)=>{
@@ -159,12 +163,15 @@ handleDelete() {
 
 onFilter(filters: any) {
   this.isFilterOpen = false;
-  this.filteredTasks = this.taskData.filter(task => {
-    const statusMatch = filters.status ? task.status === filters.status : true;
-    const priorityMatch = filters.priority ? task.priority === filters.priority : true;
-
-    return statusMatch && priorityMatch;
-  });
+  this.currentFilters = { ...filters };
+ 
+  // Trigger pagination refresh
+    if (this.paginationComponent) {
+       this.paginationComponent.searchTerm = this.currentSearchTerm;
+      this.paginationComponent.currentPage = 1; // Reset to first page
+      this.paginationComponent.filters = this.currentFilters;
+      this.paginationComponent.getPaginationList();
+    }
 }
 
 
@@ -173,18 +180,31 @@ onFilter(filters: any) {
  * Searchs tasks
  * @returns  
  */
-searchTasks() {
-  const term = this.search.value?.trim().toLowerCase() || '';
-  if (!term) {
-    this.filteredTasks = [...this.taskData];
-    return;
-  }
-
-  this.filteredTasks = this.taskData.filter(task =>
-    task.title.toLowerCase().includes(term) ||
-    task.status.toLowerCase().includes(term) ||
-    task.priority.toLowerCase().includes(term)
-  );
+searchTasks(searchTerm: string | null) {
+  this.currentSearchTerm = searchTerm?.trim() || '';
+  console.log('Search term:', this.currentSearchTerm);
+  
+  if (this.paginationComponent) {
+    // THIS IS THE KEY LINE - You must set searchTerm on pagination component
+    this.paginationComponent.searchTerm = this.currentSearchTerm;
+    this.paginationComponent.currentPage = 1;
+    
+    // Debug log
+    console.log('Set pagination searchTerm to:', this.paginationComponent.searchTerm);
+    
+    this.paginationComponent.getPaginationList();
+}
+}
+/**
+ * Setups search listener
+ */
+private setupSearchListener() {
+  this.search.valueChanges.pipe(
+    debounceTime(500),
+    distinctUntilChanged()
+  ).subscribe(searchTerm => {
+    this.searchTasks(searchTerm);
+  });
 }
 /**
  * Lists task item component
@@ -193,6 +213,7 @@ searchTasks() {
 public list(list: any) {
   this.taskData = list;
   this.taskData = this.taskHelper.listTask(this.taskData, this.startingIndex);
+  
 }
 
 /**
@@ -208,6 +229,7 @@ setStartingIndex(index: any) {
  */
 public onPageChange(page: any) {
   this.currentPage = page;
+  this.getAllTask()
 }
 
 }
