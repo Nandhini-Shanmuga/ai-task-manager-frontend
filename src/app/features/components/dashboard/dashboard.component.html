@@ -68,7 +68,44 @@
        </a>
        </div>
      </div>
- 
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+  <!-- Priority Chart -->
+  <div class="w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
+    <h2 class="text-gray-900 text-xl dark:text-white font-semibold mb-2">Priority Task Status</h2>
+
+    <div class="flex flex-col items-center">
+      <div id="priority-chart"></div>
+
+      <!-- Dynamic label -->
+      <div class="w-full flex justify-center mt-4">
+        <div class="flex items-center flex-wrap gap-6">
+          <div *ngFor="let item of priorityLegend" class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full" [style.backgroundColor]="item.color"></span>
+            <span>{{ item.label }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Suggested Chart -->
+  <div class="w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
+    <h2 class="text-gray-900 text-xl dark:text-white font-semibold mb-2">AI Suggested Task Status</h2>
+
+    <div id="column-chart"></div>
+
+    <!-- Dynamic label -->
+    <div class="w-full flex justify-center mt-4">
+      <div class="flex items-center flex-wrap gap-6">
+        <div *ngFor="let item of aiLegend" class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full" [style.backgroundColor]="item.color"></span>
+          <span>{{ item.label }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
     
    </main>
  </div>

@@ -75,7 +75,7 @@
                         <!--Due date-->
                           <div>
                           <label class="text-gray-700 text-sm block font-semibold mb-2 sm:text-base"
-                            for="due-date">Due Date<span class="text-red-600">*</span></label>
+                            for="due-date">Due Date<span class="text-red-600" *ngIf="!taskId()">*</span></label>
                                <input type="date" formControlName="dueDate" [min]="minDate" class="text-sm  md:text-base w-full mb-0.5 px-4 py-3 border border-gray-300 rounded-lg shadow-sm transition duration-200"/>                    
                             @if (createTaskForm.get('dueDate')?.touched && createTaskForm.get('dueDate')?.hasError('required')) {
                             <div class="text-red-600 text-xs absolute">
@@ -111,7 +111,7 @@
             'opacity-50 cursor-not-allowed': !createTaskForm.valid || isLoading() || (taskId() ? !isModified : false),
             'opacity-100 cursor-pointer hover:bg-bgGray-100': createTaskForm.valid && !isLoading() && (taskId() ? isModified : true)
           }" (click)="taskId() ? updateTask() : createTask()">
-  <ng-container *ngIf="isLoading(); else defaultText">
+  <ng-container *ngIf="isLoading() && isModified; else defaultText">
     <svg aria-hidden="true" role="status" class="h-4 w-4 text-gray-200 animate-spin inline mr-2" viewBox="0 0 100 101" fill="none">
       <!-- spinner paths -->
     </svg>
