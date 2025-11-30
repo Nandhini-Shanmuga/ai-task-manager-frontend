@@ -172,6 +172,7 @@ onFilter(filters: any) {
       this.paginationComponent.filters = this.currentFilters;
       this.paginationComponent.getPaginationList();
     }
+    
 }
 
 
